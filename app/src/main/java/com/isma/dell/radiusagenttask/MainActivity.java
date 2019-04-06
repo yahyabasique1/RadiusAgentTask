@@ -1,8 +1,10 @@
 package com.isma.dell.radiusagenttask;
 
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatTextView;
@@ -29,6 +31,7 @@ import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 public class MainActivity extends AppCompatActivity implements MainContract.MainView{
@@ -75,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.Main
                 enqueueUniquePeriodicWork("dbdata", ExistingPeriodicWorkPolicy.KEEP,periodicWorkRequest);
 
 
-
-
         presenter=new MainPresenter(this);
 //        presenter.requestDataFromServer();
 
@@ -101,11 +102,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.Main
     @Override
     public void setDataToRecyclerView(List<FacilitiesTable> noticeArrayList) {
 
-        FaciltyAdapter faciltyAdapter=new FaciltyAdapter(context,noticeArrayList,recyclerViewOnClick);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(faciltyAdapter);
-        faciltyAdapter.notifyDataSetChanged();
+        if(noticeArrayList.size()>0) {
 
+            FaciltyAdapter faciltyAdapter = new FaciltyAdapter(context, noticeArrayList, recyclerViewOnClick);
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            recyclerView.setAdapter(faciltyAdapter);
+            faciltyAdapter.notifyDataSetChanged();
+        }else {
+            MainActivity.this.recreate();
+        }
     }
 
     @Override

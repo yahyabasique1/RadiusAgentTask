@@ -18,6 +18,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.work.Data;
 import androidx.work.Operation;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -30,6 +31,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 public class FacilitiesWorkManager extends Worker {
     AppDatabase db;
     Context context;
+    Result result;
 
     public FacilitiesWorkManager(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -50,11 +52,12 @@ public class FacilitiesWorkManager extends Worker {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::handleResults,this::handleError);
 
-        return Result.success();
+        return result;
     }
 
     private void handleError(Throwable throwable) {
         Log.d("Workerror",throwable.getLocalizedMessage());
+        result=Result.retry();
     }
 
     private void handleResults(DataModel dataModel) {
@@ -89,6 +92,10 @@ public class FacilitiesWorkManager extends Worker {
             }
 
         }
+
+
+        result=Result.success();
+
 
 
     }
